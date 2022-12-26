@@ -1,0 +1,28 @@
+{
+  "name": "@pnfo/singlish-search",
+  "version": "1.0.0",
+  "description": "search Sinhala text using Singlish letters",
+  "main": "singlish.js",
+  "type": "module",
+  "scripts": {
+    "test": "NODE_OPTIONS='--experimental-vm-modules' jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pnfo/singlish-search.git"
+  },
+  "keywords": [
+    "singlish",
+    "search",
+    "sinhala"
+  ],
+  "author": "pathnirvana",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/pnfo/singlish-search/issues"
+  },
+  "homepage": "https://github.com/pnfo/singlish-search#readme",
+  "devDependencies": {
+    "jest": "^29.3.1"
+  }
+}
