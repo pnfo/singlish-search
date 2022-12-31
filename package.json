@@ -1,11 +1,12 @@
 {
   "name": "@pnfo/singlish-search",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "search Sinhala text using Singlish letters",
   "main": "singlish.js",
   "type": "module",
   "scripts": {
-    "test": "NODE_OPTIONS='--experimental-vm-modules' jest"
+    "test": "NODE_OPTIONS='--experimental-vm-modules' jest",
+    "publish": "npm publish --access public"
   },
   "repository": {
     "type": "git",
