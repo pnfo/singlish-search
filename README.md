@@ -8,3 +8,11 @@ This tool removes the guesswork needed when figuring out the correct spelling of
 `getPossibleMatches('singlish-query')`
 
 e.g. `getPossibleMatches('nirvana')` will search find all possible matches
+
+# Roman convert
+This allows to convert Sinhala text to the equivalent Roman transliteration and vice versa
+
+## Usage
+`sinhalaToRomanConvert('බුද්ධ ජයන්ති ත්‍රිපිටකය')` should give the output `buddha jayanti tripiṭakaya`
+
+`romanToSinhalaConvert('buddha jayanti tripiṭakaya')` should give the output `බුද්ධ ජයන්ති ත්‍රිපිටකය`
