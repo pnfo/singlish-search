@@ -1,5 +1,5 @@
 // sinhala unicode -> easy singlish
-const singlish_vowels = [
+export const singlish_vowels = [
 	['අ', 'a'],
 	['ආ', 'aa'],
 	['ඇ', 'ae'],
@@ -20,13 +20,13 @@ const singlish_vowels = [
 	//['ඐ', 'li, lii'] // sinhala only end
 ]
 
-const singlish_specials = [
+export const singlish_specials = [
 	['ඞ්', 'n'],
 	['ං', 'n, m'],
 	//['ඃ', 'n, m'] // sinhala only
 ]
 
-const singlish_consonants = [
+export const singlish_consonants = [
 	['ක', 'k'],
 	['ග', 'g'],
 	['ච', 'c, ch'],
@@ -71,7 +71,7 @@ const singlish_consonants = [
 ]
 
 // sinh before, sinh after, roman after
-const singlish_combinations = [
+export const singlish_combinations = [
 	['්', ''], //ක්
 	['', 'a'], //ක
 	['ා', 'a, aa'], //කා
