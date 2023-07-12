@@ -159,7 +159,7 @@ export function getPossibleMatches(input) {
 	}
 	// remove 1) two consecutive hals 2) consecutive independent vowels 3) hal followed by a indept vowel
 	// that do not occur in sinhala - reduce the number of matches to prevent sql query from exploding
-	return matches.filter(match => !(/[ක-ෆ]්[ක-ෆ]්|[ක-ෆ]්[අ-ඎ]|[අ-ඎ][අ-ඎ]|.+[අ-ඎ]/.test(match)) )
+	return matches.filter(match => !(/[ක-ෆ]්[ක-ෆ]්|[්ං][අ-ඎ]|[අ-ඎ][අ-ඎ]/.test(match)) ) // |.+[අ-ඎ]
 }
 
 function permuteMatches(prefix, rest) {
