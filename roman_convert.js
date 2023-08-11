@@ -28,7 +28,7 @@ const ro_specials = [
 
     /* SPECIALS */
     ['ඞ්', 'ṅ'], // not used in combi
-    ['ං', 'ṁ'], ['ං', 'ṃ', 1], // IAST, use both
+    ['ං', 'ṃ'], ['ං', 'ṁ', 1], // IAST, use both
     ['ඃ', 'ḥ'], ['ඃ', 'Ḥ', 1] // sinhala only
 ];
 
