@@ -29,3 +29,14 @@ describe('get matches', () => {
         expect(getPossibleMatches('nirvana').sort()).toEqual(nirvanaMatches);
     });
 })
+
+describe('length check', () => {
+    const test1 = 'ආනන්ද මෛත්‍රී හිමියන් ගේ ගන්දබ්බ්'
+    test('1', () => {
+        expect(getPossibleMatches(test1)).toEqual([test1])
+    })
+    const test2 = 'ආනන්ද මෛත්‍රී hiමි'
+    test('2', () => {
+        expect(getPossibleMatches(test2)).toEqual(['ආනන්ද මෛත්‍රී හිමි', 'ආනන්ද මෛත්‍රී හීමි'])
+    })
+})

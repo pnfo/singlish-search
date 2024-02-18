@@ -149,8 +149,10 @@ singlish_combinations.forEach(combi => {
 })
 console.log(`singlish map initialized. maxSinglishKeyLen: ${maxSinglishKeyLen}`)
 
-
+const maxInputLength = 20 // prevent call stack exceeding the stack size
 export function getPossibleMatches(input) {
+	if (input.length > maxInputLength) return [input]
+
 	let matches = []
 	for (let len = 1; len <= maxSinglishKeyLen && len <= input.length; len++) {
 		const prefix = input.slice(0, len)
@@ -163,8 +165,8 @@ export function getPossibleMatches(input) {
 }
 
 function permuteMatches(prefix, rest) {
-	// if prefix is all sinhala  then pass through the prefix - this allows sinhala and singlish mixing and ending dot
-	const prefixMappings = isSinglishQuery(prefix) ? singlishMapping[prefix] : [prefix]
+	// if prefix is all sinhala then pass through the prefix - this allows sinhala and singlish mixing and ending dot
+	const prefixMappings = isSinglishQuery(prefix) ? singlishMapping[prefix] : (prefix.length == 1 ? [prefix] : [])
 	if (!prefixMappings) { // recursion ending condition
 		return []
 	}
