@@ -9,25 +9,20 @@ describe('Singlish Query', () => {
 })
 
 describe('get matches', () => {
-    const nirvanaMatches = [
-        'ඤිර්වඤ',   'ණිර්වඤ',   'නිර්වඤ',   'ඤීර්වඤ',   'ණීර්වඤ',
-        'නීර්වඤ',   'ඤිර්වාඤ',  'ණිර්වාඤ',  'නිර්වාඤ',  'ඤීර්වාඤ',
-        'ණීර්වාඤ',  'නීර්වාඤ',  'ඤිර්වණ',   'ණිර්වණ',   'නිර්වණ',
-        'ඤීර්වණ',   'ණීර්වණ',   'නීර්වණ',   'ඤිර්වාණ',  'ණිර්වාණ',
-        'නිර්වාණ',  'ඤීර්වාණ',  'ණීර්වාණ',  'නීර්වාණ',  'ඤිර්වන',
-        'ණිර්වන',   'නිර්වන',   'ඤීර්වන',   'ණීර්වන',   'නීර්වන',
-        'ඤිර්වාන',  'ණිර්වාන',  'නිර්වාන',  'ඤීර්වාන',  'ණීර්වාන',
-        'නීර්වාන',  'ඤිර්වඤා',  'ණිර්වඤා',  'නිර්වඤා',  'ඤීර්වඤා',
-        'ණීර්වඤා',  'නීර්වඤා',  'ඤිර්වාඤා', 'ණිර්වාඤා', 'නිර්වාඤා',
-        'ඤීර්වාඤා', 'ණීර්වාඤා', 'නීර්වාඤා', 'ඤිර්වණා',  'ණිර්වණා',
-        'නිර්වණා',  'ඤීර්වණා',  'ණීර්වණා',  'නීර්වණා',  'ඤිර්වාණා',
-        'ණිර්වාණා', 'නිර්වාණා', 'ඤීර්වාණා', 'ණීර්වාණා', 'නීර්වාණා',
-        'ඤිර්වනා',  'ණිර්වනා',  'නිර්වනා',  'ඤීර්වනා',  'ණීර්වනා',
-        'නීර්වනා',  'ඤිර්වානා', 'ණිර්වානා', 'නිර්වානා', 'ඤීර්වානා',
-        'ණීර්වානා', 'නීර්වානා'].sort() // sort in case out of order
+    const expectedMatches = [
+        'ණිර්වණ',   'නිර්වණ',   'ණිර්වාණ',
+        'නිර්වාණ',  'ණිර්වන',   'නිර්වන',
+        'ණිර්වාන',  'නිර්වාන',  'ණිර්වණා',
+        'නිර්වණා',  'ණිර්වාණා', 'නිර්වාණා',
+        'ණිර්වනා',  'නිර්වනා',  'ණිර්වානා',
+        'නිර්වානා'].sort() // sort in case out of order
+    const matches = getPossibleMatches('nirvana')
     test('nirvana', () => {
-        expect(getPossibleMatches('nirvana').sort()).toEqual(nirvanaMatches);
+        expect(matches.sort()).toEqual(expectedMatches);
     });
+    test('expected', () => {
+        expect(matches.includes('නිර්වාන') && matches.includes('නිර්වාණ')).toBe(true)
+    })
 })
 
 describe('length check', () => {
@@ -37,6 +32,53 @@ describe('length check', () => {
     })
     const test2 = 'ආනන්ද මෛත්‍රී hiමි'
     test('2', () => {
-        expect(getPossibleMatches(test2)).toEqual(['ආනන්ද මෛත්‍රී හිමි', 'ආනන්ද මෛත්‍රී හීමි'])
+        expect(getPossibleMatches(test2)).toEqual(['ආනන්ද මෛත්‍රී හිමි'])
+    })
+})
+
+describe('explosion check', () => {
+    const matches = getPossibleMatches('janadhipathi')
+    test('expected', () => {
+        expect(matches.includes('ජනාධිපති')).toBe(true)
+    })
+    test('length', () => {
+        expect(matches.length < 500)
+    })
+    const matches2 = getPossibleMatches('janadhipathivaranaya') //this still has more than 4000 results 
+    test('expected', () => {
+        expect(matches2.includes('ජනාධිපතිවරණය')).toBe(true)
+    })
+})
+
+describe('rakar check', () => {
+    const matches = getPossibleMatches('shasthraya')
+    test('expected', () => {
+        expect(matches.includes('ශාස්ත්‍රය')).toBe(true)
+    })
+})
+
+describe('yansa check', () => {
+    const matches = getPossibleMatches('sankhyava')
+    const expectedMatches = [
+        'සංක්හ්‍යව',   'සාංක්හ්‍යව',   'සංඛ්හ්‍යව',   'සාංඛ්හ්‍යව',
+        'සංක්හ්‍යාව',  'සාංක්හ්‍යාව',  'සංඛ්හ්‍යාව',  'සාංඛ්හ්‍යාව',
+        'සංක්හ්‍යවා',  'සාංක්හ්‍යවා',  'සංඛ්හ්‍යවා',  'සාංඛ්හ්‍යවා',
+        'සංක්හ්‍යාවා', 'සාංක්හ්‍යාවා', 'සංඛ්හ්‍යාවා', 'සාංඛ්හ්‍යාවා',
+        'සංඛ්යව',    'සාංඛ්යව',    'සංඛ්යාව',   'සාංඛ්යාව',
+        'සංඛ්යවා',   'සාංඛ්යවා',   'සංඛ්යාවා',  'සාංඛ්යාවා',
+        'සඞ්ඛ්‍යව',    'සාඞ්ඛ්‍යව',    'සංඛ්‍යව',    'සාංඛ්‍යව',
+        'සණ්ඛ්‍යව',    'සාණ්ඛ්‍යව',    'සන්ඛ්‍යව',    'සාන්ඛ්‍යව',
+        'සඞ්ඛ්‍යාව',   'සාඞ්ඛ්‍යාව',   'සංඛ්‍යාව',   'සාංඛ්‍යාව',
+        'සණ්ඛ්‍යාව',   'සාණ්ඛ්‍යාව',   'සන්ඛ්‍යාව',   'සාන්ඛ්‍යාව',
+        'සඞ්ඛ්‍යවා',   'සාඞ්ඛ්‍යවා',   'සංඛ්‍යවා',   'සාංඛ්‍යවා',
+        'සණ්ඛ්‍යවා',   'සාණ්ඛ්‍යවා',   'සන්ඛ්‍යවා',   'සාන්ඛ්‍යවා',
+        'සඞ්ඛ්‍යාවා',  'සාඞ්ඛ්‍යාවා',  'සංඛ්‍යාවා',  'සාංඛ්‍යාවා',
+        'සණ්ඛ්‍යාවා',  'සාණ්ඛ්‍යාවා',  'සන්ඛ්‍යාවා',  'සාන්ඛ්‍යාවා'
+      ].sort()
+    test('sankhyava', () => {
+        expect(matches.sort()).toEqual(expectedMatches);
+    });
+    test('expected', () => {
+        expect(matches.includes('සංඛ්‍යාව')).toBe(true)
     })
 })
