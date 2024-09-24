@@ -87,31 +87,32 @@ export const singlish_combinations = [
 	['ො', 'o'],
 	['ෝ', 'oo'],
 
+	// following rakar/yansa patterns are aslo needed due to words like ග්රෑම/න්යාස which occur without rakar/yansa
 	['්‍ර', 'ra'], //ක්‍ර
 	['්‍රා', 'ra, raa'], //ක්‍රා
 	['්‍රැ', 'rae'],
-	['්‍රෑ', 'rae, raee'],
+	['්‍රෑ', 'raee'],
 	['්‍රි', 'ri'],
-	['්‍රී', 'ri, rii'],
+	['්‍රී', 'rii'],
 	['්‍රෙ', 're'],
-	['්‍රේ', 're, ree'],
+	['්‍රේ', 'ree'],
 	['්‍රෛ', 'rei'],
 	['්‍රො', 'ro'],
-	['්‍රෝ', 'ro, roo'],
+	['්‍රෝ', 'roo'],
 
 	['්‍ය', 'ya'], //ක්‍ය
 	['්‍යා', 'ya, yaa'], //ක්‍යා
 	['්‍යැ', 'yae'],
-	['්‍යෑ', 'yae, yaee'],
+	['්‍යෑ', 'yaee'],
 	['්‍යි', 'yi'],
-	['්‍යී', 'yi, yii'],
+	['්‍යී', 'yii'],
 	['්‍යු', 'yu'],
-	['්‍යූ', 'yu, yuu'],
+	['්‍යූ', 'yuu'],
 	['්‍යෙ', 'ye'],
-	['්‍යේ', 'ye, yee'],
+	['්‍යේ', 'yee'],
 	['්‍යෛ', 'yei'],
 	['්‍යො', 'yo'],
-	['්‍යෝ', 'yo, yoo'],
+	['්‍යෝ', 'yoo'],
 
 	['ෘ', 'ru'],  // sinhala only begin
 	['ෲ', 'ru, ruu'],
@@ -160,11 +161,11 @@ export function getPossibleMatches(input) {
 		matches.push(...(permuteMatches(prefix, rest)))
 	}
 	// reduce the number of matches to prevent sql query from exploding 
-	// 1) two consecutive hals (except in rakar/yansa) 
+	// 1) hal followed by හ් (occur by mis identification of kh, th, bh etc for double hals) 
 	// 2) consecutive independent vowels 
-	// 3) hal/n followed by a indept vowel
+	// 3) hal/n followed by a indept vowel (this occurs in words like ගල්අඟුරු but rare)
 	// that do not occur in sinhala
-	matches = matches.filter(match => !(/[ක-ෆ]්[ක-ෆ]්[^\u200d]|[අ-ඎ][අ-ඎ]|[්ං][අ-ඎ]/.test(match)) )
+	matches = matches.filter(match => !(/[ක-ෆ]්හ්|[අ-ඎ][අ-ඎ]|[්ං][අ-ඎ]/.test(match)) )
 	// further remove rare consonants to make the matches usable at least partially
 	if (matches.length > 500) { 
 		matches = matches.filter(match => !/[ඤඨඟඡඣඦඪඬඳඵඥ]/.test(match))
