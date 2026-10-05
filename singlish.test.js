@@ -18,8 +18,11 @@ describe('get matches', () => {
         'නිර්වානා'].sort() // sort in case out of order
     const matches = getPossibleMatches('nirvana')
     test('nirvana', () => {
-        expect(matches.sort()).toEqual(expectedMatches);
+        expect(matches).toEqual(expect.arrayContaining(expectedMatches));
     });
+    test('ranked', () => {
+        expect(matches.slice(0, 3)).toContain('නිර්වාණ')
+    })
     test('expected', () => {
         expect(matches.includes('නිර්වාන') && matches.includes('නිර්වාණ')).toBe(true)
     })
@@ -32,7 +35,7 @@ describe('length check', () => {
     })
     const test2 = 'ආනන්ද මෛත්‍රී hiමි'
     test('2', () => {
-        expect(getPossibleMatches(test2)).toEqual(['ආනන්ද මෛත්‍රී හිමි'])
+        expect(getPossibleMatches(test2)[0]).toEqual('ආනන්ද මෛත්‍රී හිමි')
     })
 })
 
@@ -75,7 +78,7 @@ describe('yansa check', () => {
         'සණ්ඛ්‍යාවා',  'සාණ්ඛ්‍යාවා', 'සන්ඛ්‍යාවා',  'සාන්ඛ්‍යාවා'
     ].sort()
     test('sankhyava', () => {
-        expect(matches.sort()).toEqual(expectedMatches);
+        expect(matches).toEqual(expect.arrayContaining(expectedMatches));
     });
     test('expected', () => {
         expect(matches.includes('සංඛ්‍යාව')).toBe(true)
@@ -104,7 +107,20 @@ describe('filter check', () => {
     test('long list does not exceed call stack', () => {
         expect(() => getPossibleMatches('aknknamaknknadukan')).not.toThrow()
     })
-    test('janadhipathivaranaya', () => {
-        expect(getPossibleMatches('janadhipathivaranaya').length).toBeLessThanOrEqual(1024)
+})
+
+describe('ranking check', () => {
+    test('most likely first', () => {
+        expect(getPossibleMatches('janadhipathivaranaya')[0]).toEqual('ජනාධිපතිවරණය')
+        expect(getPossibleMatches('samanthabhadra')[0]).toEqual('සමන්තභද්‍ර')
+        expect(getPossibleMatches('gedara')[0]).toEqual('ගෙදර')
+    })
+    test('max matches', () => {
+        expect(getPossibleMatches('janadhipathivaranaya').length).toEqual(300)
+        expect(getPossibleMatches('janadhipathivaranaya', { maxMatches: 10 }).length).toEqual(10)
+    })
+    test('shortcut spellings', () => {
+        expect(getPossibleMatches('vahanse', { maxMatches: 10 })).toContain('වහන්සේ')
+        expect(getPossibleMatches('bhikkhu', { maxMatches: 10 })).toContain('භික්ඛූ')
     })
 })

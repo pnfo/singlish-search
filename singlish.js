@@ -1,17 +1,19 @@
+import { model } from './singlish-model.js'
+
 // sinhala unicode -> easy singlish
 export const singlish_vowels = [
 	['අ', 'a'],
-	['ආ', 'aa'],
+	['ආ', 'a, aa'],
 	['ඇ', 'ae'],
 	['ඈ', 'ae, aee'],
 	['ඉ', 'i'],
-	['ඊ', 'ii'],
+	['ඊ', 'i, ii'],
 	['උ', 'u'],
-	['ඌ', 'uu'],
+	['ඌ', 'u, uu'],
 	['එ', 'e'],
-	['ඒ', 'ee'],
+	['ඒ', 'e, ee'],
 	['ඔ', 'o'],
-	['ඕ', 'oo'],
+	['ඕ', 'o, oo'],
 	['ඓ', 'ai'], // sinhala only begin
 	['ඖ', 'ou'],
 	['ඍ', 'ru'],
@@ -22,7 +24,7 @@ export const singlish_vowels = [
 
 export const singlish_specials = [
 	['ඞ්', 'n'],
-	['ං', 'n'],
+	['ං', 'n, m'],
 	//['ඃ', 'n, m'] // sinhala only
 ]
 
@@ -52,7 +54,7 @@ export const singlish_consonants = [
 	['ෆ', 'f'],
 
 	['ඛ', 'kh, k'],
-	['ඤ', 'kn'],
+	['ඤ', 'n, kn'],
 	['ඨ', 't'],
 	['ඝ', 'gh'],
 	['ඟ', 'ng'],
@@ -76,43 +78,43 @@ export const singlish_combinations = [
 	['', 'a'], //ක
 	['ා', 'a, aa'], //කා
 	['ැ', 'ae'],
-	['ෑ', 'aee'],
+	['ෑ', 'ae, aee'],
 	['ි', 'i'],
-	['ී', 'ii'],
+	['ී', 'i, ii'],
 	['ු', 'u'],
-	['ූ', 'uu'],
+	['ූ', 'u, uu'],
 	['ෙ', 'e'],
-	['ේ', 'ee'],
+	['ේ', 'e, ee'],
 	['ෛ', 'ei'],
 	['ො', 'o'],
-	['ෝ', 'oo'],
+	['ෝ', 'o, oo'],
 
 	// following rakar/yansa patterns are aslo needed due to words like ග්රෑම/න්යාස which occur without rakar/yansa
 	['්‍ර', 'ra'], //ක්‍ර
 	['්‍රා', 'ra, raa'], //ක්‍රා
 	['්‍රැ', 'rae'],
-	['්‍රෑ', 'raee'],
+	['්‍රෑ', 'rae, raee'],
 	['්‍රි', 'ri'],
-	['්‍රී', 'rii'],
+	['්‍රී', 'ri, rii'],
 	['්‍රෙ', 're'],
-	['්‍රේ', 'ree'],
+	['්‍රේ', 're, ree'],
 	['්‍රෛ', 'rei'],
 	['්‍රො', 'ro'],
-	['්‍රෝ', 'roo'],
+	['්‍රෝ', 'ro, roo'],
 
 	['්‍ය', 'ya'], //ක්‍ය
 	['්‍යා', 'ya, yaa'], //ක්‍යා
 	['්‍යැ', 'yae'],
-	['්‍යෑ', 'yaee'],
+	['්‍යෑ', 'yae, yaee'],
 	['්‍යි', 'yi'],
-	['්‍යී', 'yii'],
+	['්‍යී', 'yi, yii'],
 	['්‍යු', 'yu'],
-	['්‍යූ', 'yuu'],
+	['්‍යූ', 'yu, yuu'],
 	['්‍යෙ', 'ye'],
-	['්‍යේ', 'yee'],
+	['්‍යේ', 'ye, yee'],
 	['්‍යෛ', 'yei'],
 	['්‍යො', 'yo'],
-	['්‍යෝ', 'yoo'],
+	['්‍යෝ', 'yo, yoo'],
 
 	['ෘ', 'ru'],  // sinhala only begin
 	['ෲ', 'ru, ruu'],
@@ -121,21 +123,25 @@ export const singlish_combinations = [
 	//['ෳ', 'li, lii'] // sinhala only end
 ]
 
-const singlishMapping = {}
+// singlish -> list of [sinhala, bits] - bits is the extra cost of a shortcut spelling e.g. i for ී (instead of ii)
+const singlishMapping = Object.create(null)
 let maxSinglishKeyLen = 0
+const shortcutBits = 1
 function addToSinglishMapping(values, pSinhStr, pRomanStr) {
+	const pRomans = pRomanStr.split(',').map(r => r.trim())
 	values.forEach(pair => {
 		const sinh = pair[0] + pSinhStr
 
-		const romans = pair[1].split(',');
-		const pRomans = pRomanStr.split(',');
+		const romans = pair[1].split(',').map(r => r.trim())
+		const isShortcut = (r, list) => r.length < Math.max(...list.map(l => l.length))
 		romans.forEach(roman => {
 			pRomans.forEach(pRoman => {
-				const mapIndex = roman.trim() + pRoman.trim()
+				const mapIndex = roman + pRoman
+				const bits = shortcutBits * (isShortcut(roman, romans) + isShortcut(pRoman, pRomans))
 				if (mapIndex in singlishMapping) {
-					singlishMapping[mapIndex].push(sinh)
+					singlishMapping[mapIndex].push([sinh, bits])
 				} else {
-					singlishMapping[mapIndex] = [sinh]
+					singlishMapping[mapIndex] = [[sinh, bits]]
 					maxSinglishKeyLen = Math.max(mapIndex.length, maxSinglishKeyLen)
 				}
 			})
@@ -154,7 +160,7 @@ console.log(`singlish map initialized. maxSinglishKeyLen: ${maxSinglishKeyLen}`)
 export const matchFilters = {
 	// hal followed by හ - occur by mis identification of kh, gh, ch, jh, th, dh, ph, bh, sh as two letters
 	// except ක්හට, ක්හි, ක්හු, ස්හි, ස්හු that are common in old sinhala e.g. යමක්හට, දවස්හි
-	aspirateSplit: /[ඛගචජටඨඩදපබ]්හ|[කස]්හ(?![ටිු])/,
+	aspirateSplit: /[ඛගචජටඨඩදපබ]්හ|[කස]්හ[^ටිු]/,
 	// consecutive independent vowels
 	vowelVowel: /[අ-ඖ][අ-ඖ]/,
 	// hal/n followed by a indept vowel (this occurs in words like ගල්අඟුරු but rare)
@@ -162,48 +168,73 @@ export const matchFilters = {
 }
 const matchFilter = new RegExp(Object.values(matchFilters).map(re => re.source).join('|'))
 
-const maxInputLength = 20 // prevent too many matches
-export function getPossibleMatches(input) {
+// sinhala letter n-gram model built from sinhala corpora - used to rank the matches by how likely they occur in sinhala
+// letterBits[k] maps a context of k letters to an object of next letter -> -log2 probability
+const letterBits = model.data.map((line, k) => {
+	const contexts = new Map(), letterOf = sym => model.letters[model.symbols.indexOf(sym)]
+	line.split(' ').forEach(group => {
+		const next = {}
+		for (let i = k; i < group.length; i += 2) next[letterOf(group[i])] = model.symbols.indexOf(group[i + 1]) * model.bitsStep
+		contexts.set([...group.slice(0, k)].map(letterOf).join(''), next)
+	})
+	return contexts
+})
+// extra bits when backing off from k letter context - bigrams are not pruned so an unseen bigram is very unlikely
+const backoffBits = [20, 12, 2]
+
+function getLetterBits(context, letter) {
+	let bits = 0
+	for (let k = Math.min(context.length, model.order - 1); k >= 0; k--) {
+		const next = letterBits[k].get(context.slice(context.length - k))
+		if (next && letter in next) return bits + next[letter]
+		bits += backoffBits[Math.min(k, backoffBits.length - 1)]
+	}
+	return bits
+}
+
+// add the sinhala string to the match and update the cost (-log2 probability of the match)
+function extendMatch({ match, context, cost }, sinh, bits) {
+	cost += bits
+	for (const letter of sinh) {
+		if (letter == '\u200D') continue // zwj in rakar/yansa is not in the model
+		if (letter in letterBits[0].get('')) {
+			cost += getLetterBits(context, letter)
+			context = (context + letter).slice(1 - model.order)
+		} else {
+			context = '^' // space, dot etc start a new word
+		}
+	}
+	return { match: match + sinh, context, cost }
+}
+
+const maxInputLength = 30 // the beam keeps the work linear in the input length, this only guards against very long inputs
+// returns the sinhala matches for the singlish input ranked by how likely they occur in sinhala (most likely first)
+export function getPossibleMatches(input, { maxMatches = 300 } = {}) {
 	if (input.length > maxInputLength) return [input]
-	return getMatchesMemo(input, new Map())
-}
+	const beamWidth = Math.max(2 * maxMatches, 100) // number of partial matches kept at each input position
 
-// matches of the same suffix are reused (memo) since the suffix is reached via many prefix splits
-function getMatchesMemo(input, memo) {
-	if (memo.has(input)) return memo.get(input)
-
-	let matches = []
-	for (let len = 1; len <= maxSinglishKeyLen && len <= input.length; len++) {
-		const prefix = input.slice(0, len)
-		const rest = input.slice(len)
-		permuteMatches(prefix, rest, memo).forEach(m => matches.push(m)) // spread causes call stack exceeded for long lists
+	// left to right beam search - beams[pos] has the partial matches for input.slice(0, pos)
+	const beams = Array.from({ length: input.length + 1 }, () => new Map())
+	beams[0].set('', { match: '', context: '^', cost: 0 })
+	for (let pos = 0; pos < input.length; pos++) {
+		const partials = [...beams[pos].values()].sort((a, b) => a.cost - b.cost).slice(0, beamWidth)
+		for (let len = 1; len <= maxSinglishKeyLen && pos + len <= input.length; len++) {
+			const prefix = input.slice(pos, pos + len)
+			// if prefix is all sinhala then pass through the prefix - this allows sinhala and singlish mixing and ending dot
+			const mappings = isSinglishQuery(prefix) ? singlishMapping[prefix] : (len == 1 ? [[prefix, 0]] : null)
+			if (!mappings) continue
+			const beam = beams[pos + len]
+			for (const partial of partials) {
+				const tail = partial.match.slice(-3) // longest filter is 4 letters
+				for (const [sinh, bits] of mappings) {
+					if (matchFilter.test(tail + sinh)) continue
+					const extended = extendMatch(partial, sinh, bits), existing = beam.get(extended.match)
+					if (!existing || existing.cost > extended.cost) beam.set(extended.match, extended)
+				}
+			}
+		}
 	}
-	matches = matches.filter(match => !matchFilter.test(match))
-	// further remove rare consonants to make the matches usable at least partially
-	if (matches.length > 500) { 
-		matches = matches.filter(match => !/[ඤඨඟඡඣඦඪඬඳඵඥ]/.test(match))
-	}
-	memo.set(input, matches)
-	return matches
-}
-
-function permuteMatches(prefix, rest, memo) {
-	// if prefix is all sinhala then pass through the prefix - this allows sinhala and singlish mixing and ending dot
-	const prefixMappings = isSinglishQuery(prefix) ? singlishMapping[prefix] : (prefix.length == 1 ? [prefix] : [])
-	if (!prefixMappings) { // recursion ending condition
-		return []
-	}
-	if (!rest.length) {  // recursion ending condition
-		return prefixMappings
-	}
-	const restMappings = getMatchesMemo(rest, memo);
-	const fullMappings = []
-	restMappings.forEach(restM =>
-		prefixMappings.forEach(prefixM =>
-			fullMappings.push(prefixM + restM)
-		)
-	)
-	return fullMappings
+	return [...beams[input.length].values()].sort((a, b) => a.cost - b.cost).slice(0, maxMatches).map(p => p.match)
 }
 
 export function isSinglishQuery(query) {
