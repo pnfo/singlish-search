@@ -5,6 +5,7 @@
   "main": "singlish.js",
   "type": "module",
   "scripts": {
+    "eval": "node scripts/extract-corpus.mjs && node scripts/build-gold.mjs && node scripts/eval.mjs",
     "test": "NODE_OPTIONS='--experimental-vm-modules' jest",
     "publish": "npm publish --access public"
   },
@@ -24,6 +25,8 @@
   },
   "homepage": "https://github.com/pnfo/singlish-search#readme",
   "devDependencies": {
-    "jest": "^29.3.1"
+    "jest": "^29.3.1",
+    "singlish-v125": "npm:@pnfo/singlish-search@1.2.5",
+    "singlish-v127": "npm:@pnfo/singlish-search@1.2.7"
   }
 }

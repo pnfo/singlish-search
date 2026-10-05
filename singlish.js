@@ -150,30 +150,44 @@ singlish_combinations.forEach(combi => {
 })
 console.log(`singlish map initialized. maxSinglishKeyLen: ${maxSinglishKeyLen}`)
 
-const maxInputLength = 20 // prevent call stack exceeding the stack size
+// reduce the number of matches to prevent sql query from exploding by removing letter sequences that do not occur in sinhala
+export const matchFilters = {
+	// hal followed by හ - occur by mis identification of kh, gh, ch, jh, th, dh, ph, bh, sh as two letters
+	// except ක්හට, ක්හි, ක්හු, ස්හි, ස්හු that are common in old sinhala e.g. යමක්හට, දවස්හි
+	aspirateSplit: /[ඛගචජටඨඩදපබ]්හ|[කස]්හ(?![ටිු])/,
+	// consecutive independent vowels
+	vowelVowel: /[අ-ඖ][අ-ඖ]/,
+	// hal/n followed by a indept vowel (this occurs in words like ගල්අඟුරු but rare)
+	halVowel: /[්ං][අ-ඖ]/,
+}
+const matchFilter = new RegExp(Object.values(matchFilters).map(re => re.source).join('|'))
+
+const maxInputLength = 20 // prevent too many matches
 export function getPossibleMatches(input) {
 	if (input.length > maxInputLength) return [input]
+	return getMatchesMemo(input, new Map())
+}
+
+// matches of the same suffix are reused (memo) since the suffix is reached via many prefix splits
+function getMatchesMemo(input, memo) {
+	if (memo.has(input)) return memo.get(input)
 
 	let matches = []
 	for (let len = 1; len <= maxSinglishKeyLen && len <= input.length; len++) {
 		const prefix = input.slice(0, len)
 		const rest = input.slice(len)
-		matches.push(...(permuteMatches(prefix, rest)))
+		permuteMatches(prefix, rest, memo).forEach(m => matches.push(m)) // spread causes call stack exceeded for long lists
 	}
-	// reduce the number of matches to prevent sql query from exploding 
-	// 1) hal followed by හ් (occur by mis identification of kh, th, bh etc for double hals) 
-	// 2) consecutive independent vowels 
-	// 3) hal/n followed by a indept vowel (this occurs in words like ගල්අඟුරු but rare)
-	// that do not occur in sinhala
-	matches = matches.filter(match => !(/[ක-ෆ]්හ්|[අ-ඎ][අ-ඎ]|[්ං][අ-ඎ]/.test(match)) )
+	matches = matches.filter(match => !matchFilter.test(match))
 	// further remove rare consonants to make the matches usable at least partially
 	if (matches.length > 500) { 
 		matches = matches.filter(match => !/[ඤඨඟඡඣඦඪඬඳඵඥ]/.test(match))
 	}
+	memo.set(input, matches)
 	return matches
 }
 
-function permuteMatches(prefix, rest) {
+function permuteMatches(prefix, rest, memo) {
 	// if prefix is all sinhala then pass through the prefix - this allows sinhala and singlish mixing and ending dot
 	const prefixMappings = isSinglishQuery(prefix) ? singlishMapping[prefix] : (prefix.length == 1 ? [prefix] : [])
 	if (!prefixMappings) { // recursion ending condition
@@ -182,7 +196,7 @@ function permuteMatches(prefix, rest) {
 	if (!rest.length) {  // recursion ending condition
 		return prefixMappings
 	}
-	const restMappings = getPossibleMatches(rest);
+	const restMappings = getMatchesMemo(rest, memo);
 	const fullMappings = []
 	restMappings.forEach(restM =>
 		prefixMappings.forEach(prefixM =>

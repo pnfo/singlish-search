@@ -81,3 +81,30 @@ describe('yansa check', () => {
         expect(matches.includes('සංඛ්‍යාව')).toBe(true)
     })
 })
+
+describe('recall check', () => {
+    const cases = {
+        dharmaya: 'ධර්මය', kotaheena: 'කොටහේන', yamakhata: 'යමක්හට', davashi: 'දවස්හි',
+        siddhaartha: 'සිද්ධාර්ථ', prathipaththi: 'ප්‍රතිපත්ති', bhikkhu: 'භික්ඛු',
+    }
+    for (const [singlish, sinhala] of Object.entries(cases)) {
+        test(singlish, () => {
+            expect(getPossibleMatches(singlish)).toContain(sinhala)
+        })
+    }
+})
+
+describe('filter check', () => {
+    test('aspirate split', () => {
+        expect(getPossibleMatches('dharmaya').filter(m => m.includes('ද්හ') || m.includes('ඩ්හ'))).toEqual([])
+    })
+    test('hal followed by independent vowel', () => {
+        expect(getPossibleMatches('kotahena').filter(m => /්[ඔඑ]/.test(m))).toEqual([])
+    })
+    test('long list does not exceed call stack', () => {
+        expect(() => getPossibleMatches('aknknamaknknadukan')).not.toThrow()
+    })
+    test('janadhipathivaranaya', () => {
+        expect(getPossibleMatches('janadhipathivaranaya').length).toBeLessThanOrEqual(1024)
+    })
+})
