@@ -32,6 +32,7 @@ const ro_specials = [
     ['ඃ', 'ḥ'], ['ඃ', 'Ḥ', 1] // sinhala only
 ];
 
+// \uF826 (private use) marks the sinhala only prenasal letters in some old texts
 const ro_consonants = [
     ['ඛ', 'kh'],
     ['ඨ', 'ṭh'],
@@ -40,14 +41,14 @@ const ro_consonants = [
     ['ඣ', 'jh'],
     ['ඦ', 'ñj'], //ඤ්ජ
     ['ඪ', 'ḍh'],
-    ['ඬ', 'ṇḍ'], ['ඬ', 'dh', 1], //ණ්ඩ
+    ['ඬ', 'ṇḍ'], ['ඬ', '\uF826dh', 1], //ණ්ඩ
     ['ථ', 'th'],
     ['ධ', 'dh'],
     ['ඵ', 'ph'],    
     ['භ', 'bh'],    
     ['ඹ', 'mb'], // non pali
-    ['ඳ', 'ṉd'], ['ඳ', 'd', 1], // non pali
-    ['ඟ', 'ṉg'], ['ඟ', 'g', 1], // non pali
+    ['ඳ', 'ṉd'], ['ඳ', '\uF826d', 1], // non pali
+    ['ඟ', 'ṉg'], ['ඟ', '\uF826g', 1], // non pali
     ['ඥ', 'gn'], // non pali
     
     ['ක', 'k'],
@@ -102,9 +103,13 @@ const ro_combinations = [
 
 
 const ro_conso_combi = createConsoCombi(ro_combinations, ro_consonants);
+// longest first, so that e.g. kha is replaced before ka - sorted once for each direction (0 sinhala->roman, 1 roman->sinhala)
+const sortedMappings = [0, 1].map(dir => [ro_conso_combi, ro_specials].map(list => list
+    .filter(m => m.length < 3 || m[2] == dir) // one-way mappings
+    .sort((a, b) => b[dir].length - a[dir].length)))
 
 export function romanToSinhalaConvert(text) {
-     text = genericConvert(text, 1);
+    text = genericConvert(text.normalize('NFC'), 1); // combining diacritics (e.g. from pdfs) to single letters
     // add zwj for yansa and rakaransa
     text = replaceRe(text, '්ර','්‍ර'); // rakar
     return replaceRe(text, '්ය','්‍ය'); // yansa
@@ -124,19 +129,9 @@ function replaceRe(text, f, r) {
 }
 
 function genericConvert(text, dir) {
-    ro_conso_combi.sort((a, b) => b[dir].length - a[dir].length)
-    ro_conso_combi.forEach(cc => {
-        if (cc.length < 3 || cc[2] == dir) {
-            text = replaceRe(text, cc[dir], cc[+!dir]);
-        }
-    });
-
-    ro_specials.sort((a, b) => b[dir].length - a[dir].length)
-    ro_specials.forEach(v => {
-        if (v.length < 3 || v[2] == dir) {
-            text = replaceRe(text, v[dir], v[+!dir]);
-        }
-    });
+    sortedMappings[dir].forEach(list => list.forEach(m => {
+        text = replaceRe(text, m[dir], m[+!dir]);
+    }));
     return text
 }
 
