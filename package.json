@@ -1,14 +1,20 @@
 {
   "name": "@pnfo/singlish-search",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "description": "search Sinhala text using Singlish letters",
   "main": "singlish.js",
+  "files": [
+    "singlish.js",
+    "singlish-model.js",
+    "roman_convert.js"
+  ],
   "type": "module",
   "scripts": {
     "corpus": "node scripts/extract-corpus.mjs && node scripts/build-gold.mjs",
     "build-model": "node scripts/build-model.mjs --minCount=20 --step=0.5",
     "eval": "node scripts/eval.mjs",
-    "test": "NODE_OPTIONS='--experimental-vm-modules' jest",
+    "golden": "node scripts/build-golden.mjs",
+    "test": "NODE_OPTIONS='--experimental-vm-modules' jest && go test ./...",
     "publish": "npm publish --access public"
   },
   "repository": {

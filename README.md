@@ -15,6 +15,7 @@ Matches are ranked with a Sinhala letter trigram model (`singlish-model.js`) bui
 - `npm run corpus` - extract word lists from the sibling projects' databases into `data/` and build the gold (singlish, sinhala) pairs
 - `npm run build-model` - rebuild `singlish-model.js` from `data/` (`--holdout` leaves out the gold words)
 - `npm run eval` - compare recall and number of matches with previous versions
+- `npm run golden` - rewrite the `testdata/` fixtures that the Go port is tested against, after changing the JS code or the model
 
 # Roman convert
 This allows to convert Sinhala text to the equivalent Roman transliteration and vice versa
@@ -23,3 +24,26 @@ This allows to convert Sinhala text to the equivalent Roman transliteration and 
 `sinhalaToRomanConvert('බුද්ධ ජයන්ති ත්‍රිපිටකය')` should give the output `buddha jayanti tripiṭakaya`
 
 `romanToSinhalaConvert('buddha jayanti tripiṭakaya')` should give the output `බුද්ධ ජයන්ති ත්‍රිපිටකය`
+
+# Go
+The same two modules are available in Go and give the same output as the JS versions (checked by `go test ./...` against the fixtures in `testdata/` written by the JS code). The Go package embeds `singlish-model.js`, so a rebuilt model is used by both.
+
+```
+go get github.com/pnfo/singlish-search@v1.4.1
+```
+
+```go
+import (
+	singlish "github.com/pnfo/singlish-search"
+	"github.com/pnfo/singlish-search/roman"
+)
+
+singlish.GetPossibleMatches("nirvana")      // at most 300 matches, most likely first
+singlish.GetPossibleMatchesN("nirvana", 10) // at most 10 matches
+singlish.IsSinglishQuery("nirvana")         // true
+
+roman.FromSinhala("බුද්ධ ජයන්ති ත්‍රිපිටකය") // buddha jayanti tripiṭakaya
+roman.ToSinhala("buddha jayanti tripiṭakaya") // බුද්ධ ජයන්ති ත්‍රිපිටකය
+```
+
+The functions are safe for concurrent use. Go modules use the git tags of this repo, so tag each release (`vX.Y.Z`) after `npm publish`.
