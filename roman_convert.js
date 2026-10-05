@@ -32,24 +32,25 @@ const ro_specials = [
     ['ඃ', 'ḥ'], ['ඃ', 'Ḥ', 1] // sinhala only
 ];
 
-// \uF826 (private use) marks the sinhala only prenasal letters in some old texts
+// iast, and iso 15919 for the sinhala only letters (prenasals use a breve e.g. n̆d)
+// one-way (roman -> sinhala only) mappings accept older spellings, \uF826 (private use) marks the prenasals in some old texts
 const ro_consonants = [
     ['ඛ', 'kh'],
     ['ඨ', 'ṭh'],
     ['ඝ', 'gh'],
     ['ඡ', 'ch'],
     ['ඣ', 'jh'],
-    ['ඦ', 'ñj'], //ඤ්ජ
+    ['ඦ', 'n̆j'], // non pali
     ['ඪ', 'ḍh'],
-    ['ඬ', 'ṇḍ'], ['ඬ', '\uF826dh', 1], //ණ්ඩ
+    ['ඬ', 'n̆ḍ'], ['ඬ', '\uF826dh', 1], // non pali
     ['ථ', 'th'],
     ['ධ', 'dh'],
     ['ඵ', 'ph'],    
     ['භ', 'bh'],    
-    ['ඹ', 'mb'], // non pali
-    ['ඳ', 'ṉd'], ['ඳ', '\uF826d', 1], // non pali
-    ['ඟ', 'ṉg'], ['ඟ', '\uF826g', 1], // non pali
-    ['ඥ', 'gn'], // non pali
+    ['ඹ', 'm̆b'], // non pali
+    ['ඳ', 'n̆d'], ['ඳ', 'ṉd', 1], ['ඳ', '\uF826d', 1], // non pali
+    ['ඟ', 'n̆g'], ['ඟ', 'ṉg', 1], ['ඟ', '\uF826g', 1], // non pali
+    ['ඥ', 'jñ'], // non pali
     
     ['ක', 'k'],
     ['ග', 'g'],    
@@ -70,7 +71,7 @@ const ro_consonants = [
     ['ල', 'l'],
     ['ව', 'v'],
     ['ශ', 'ś'],
-    ['ෂ', 'ş'], ['ෂ', 'Ṣ', 1], ['ෂ', 'ṣ', 1],
+    ['ෂ', 'ṣ'], ['ෂ', 'Ṣ', 1], ['ෂ', 'ş', 1],
     ['ස', 's'],
     ['හ', 'h'],
     ['ළ', 'ḷ'],
