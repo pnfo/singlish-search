@@ -47,6 +47,14 @@ func TestGolden(t *testing.T) {
 
 // the tests below are from singlish.test.js
 
+func TestCapitals(t *testing.T) {
+	for _, q := range []string{"Jaya", "NIRVANA", "Rathana"} {
+		if got, want := GetPossibleMatches(q), GetPossibleMatches(strings.ToLower(q)); !slices.Equal(got, want) || len(got) == 0 {
+			t.Errorf("GetPossibleMatches(%q) = %.5q, want the matches of the lower case %.5q", q, got, want)
+		}
+	}
+}
+
 func TestIsSinglishQuery(t *testing.T) {
 	if !IsSinglishQuery("nirvana") || IsSinglishQuery("නිර්වාන") || !IsSinglishQuery("නිර්වානnir") {
 		t.Error("IsSinglishQuery")

@@ -357,6 +357,7 @@ func GetPossibleMatches(input string) []string {
 
 // GetPossibleMatchesN is GetPossibleMatches returning at most maxMatches matches.
 func GetPossibleMatchesN(input string, maxMatches int) []string {
+	input = strings.ToLower(input) // singlish has no capital letters - phone keyboards capitalize the first letter
 	in := []rune(input)
 	if len(in) > maxInputLength {
 		return []string{input}

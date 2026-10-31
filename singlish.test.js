@@ -8,6 +8,14 @@ describe('Singlish Query', () => {
     });
 })
 
+describe('capital letters', () => {
+    test('a capitalized word (phone keyboards) gives the same matches', () => {
+        expect(getPossibleMatches('Jaya')).toEqual(getPossibleMatches('jaya'))
+        expect(getPossibleMatches('NIRVANA')).toEqual(getPossibleMatches('nirvana'))
+        expect(getPossibleMatches('Rathana')[0]).toBe('රතන')
+    })
+})
+
 describe('get matches', () => {
     const expectedMatches = [
         'ණිර්වණ',   'නිර්වණ',   'ණිර්වාණ',

@@ -29,7 +29,7 @@ This allows to convert Sinhala text to the equivalent Roman transliteration and 
 The same two modules are available in Go and give the same output as the JS versions (checked by `go test ./...` against the fixtures in `testdata/` written by the JS code). The Go package embeds `singlish-model.js`, so a rebuilt model is used by both.
 
 ```
-go get github.com/pnfo/singlish-search@v1.4.1
+go get github.com/pnfo/singlish-search@v1.4.2
 ```
 
 ```go
